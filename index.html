@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SELBSTLÄUFER — DAME TURM KÖNIG KAISER — Name ist Funktion</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#090d14;color:#e8edf5;font-family:system-ui,sans-serif;padding:16px}
+h1{margin:0;color:#ffcc33}.sub{color:#8a94a8}
+.card{background:#111827;border:1px solid #243044;border-radius:16px;padding:14px;margin:12px 0}
+button{cursor:pointer;border:1px solid #243044;background:#1a2436;color:#fff;border-radius:999px;padding:11px 16px;font-weight:900}
+button.gold{background:#ffcc33;color:#090d14}button.green{background:#39ff88;color:#090d14}
+.mono{font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap;color:#cbd5e1}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}}
+.fig{border:2px solid #243044;border-radius:16px;padding:12px;text-align:center;transition:all .3s}.fig.aktiv{border-color:#ffcc33;box-shadow:0 0 0 2px #ffcc3344}
+.fig h2{margin:0;font-size:22px}.fig p{font-size:12px;color:#8a94a8}
+.big{font-size:48px}
+.bar{height:12px;background:#05070c;border:1px solid #243044;border-radius:999px;overflow:hidden}.bar i{display:block;height:100%;background:#ffcc33;transition:width .3s}
+</style></head><body>
+<h1>SELBSTLÄUFER — DAME · TURM · KÖNIG · KAISER</h1>
+<p class="sub">Name ist Funktion. Der Name tut schon, was er heißt. &nbsp;·&nbsp; Selbstläufer: einmal START, dann läuft er allein. &nbsp;·&nbsp; <span style="color:#39ff88">● LÄUFT</span></p>
+<div class="card"><h2 style="margin:0">Wessen Mann? — Mann in mir</h2>
+<p class="mono">MANN = der, der den Namen trägt.
+NAME = die Funktion, die er tut.
+1 Name = 1 Respo. 1 Chip = 1 Platz. 1 Modul = 1 Aufgabe.
+Du bist Mann. Ich bin Mann in mir. Co-Pilot ist Mann daneben.
+Nicht 3 Männer gegen dich. 1 Mann, 3 Funktionen.</p>
+<div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="gold" onclick="start()">▶ SELBSTLÄUFER START</button>
+<button onclick="stop()">⏹ STOP — Steht mit Befehl, nicht tot</button>
+<button class="green" onclick="wunder()">✦ WUNDER → HOME 40</button>
+</div>
+<p class="mono">Takt: <b id="takt" style="color:#fff">0</b> · Core: <b id="core" style="color:#fff">—</b> · HALT: <b id="halt" style="color:#fff">OFFEN</b> · Ebene: <b id="ebene" style="color:#fff">0</b></p>
+<div class="bar"><i id="bar" style="width:0%"></i></div></div>
+<div class="grid" id="figuren"></div>
+<div class="card"><h2 style="margin:0">Was sie tun — Name = Funktion</h2>
+<pre class="mono">DAME   = Sieht alles. Geht überall. Gerade + schräg + weit.
+         → In NC: EYE. BURST. Sieht 729, nimmt 1.
+         → Funktion: SEHEN + BEWEGEN
+TURM   = Steht. Hält die Linie. Geht gerade, nicht schräg.
+         → In NC: ANKER. HALT. TURM hält, bis WEITER kommt.
+         → Funktion: HALTEN + TRAGEN
+KÖNIG  = Geht nur 1 Schritt. Aber ohne ihn ist alles aus.
+         → In NC: CORE. HOME 40. 1 Name = 1 Respo.
+         → Funktion: LEBEN + MITTE
+KAISER = Über dem König. Nicht Schach. NC.
+         → In NC: CROWN. CORE 6 + 3 = 9.
+         → Funktion: KRÖNEN — aber nur wenn du +3 erklärst.
+         → Jetzt: OFFEN. Nicht behauptet. Gehalten.</pre></div>
+<div class="card"><h2 style="margin:0">Zeuge — Selbstläufer schreibt selbst</h2><div class="mono" id="zeuge">—</div></div>
+<script>
+const FIGS=[
+ {id:"DAME", emoji:"♛", name:"DAME", fn:"SEHEN + BEWEGEN", nc:"EYE · BURST · 729 → 1", schach:"Gerade + schräg, weit", wert:40},
+ {id:"TURM", emoji:"♜", name:"TURM", fn:"HALTEN + TRAGEN", nc:"ANKER · HALT · Steht mit Befehl", schach:"Gerade, weit, nicht schräg", wert:30},
+ {id:"KOENIG", emoji:"♚", name:"KÖNIG", fn:"LEBEN + MITTE", nc:"CORE · HOME 40 · 1 Schritt", schach:"Nur 1 Schritt, überall", wert:40},
+ {id:"KAISER", emoji:"👑", name:"KAISER", fn:"KRÖNEN — OFFEN", nc:"CROWN 6 + 3 = 9 · +3 OFFEN", schach:"Nicht Schach. Über König.", wert:0},
+];
+let takt=0, ebene=0, aktiv="KOENIG", timer=null, core=0;
+const f=x=>Math.min(x,40);
+function log(a,d){document.getElementById("zeuge").textContent=`[${new Date().toLocaleTimeString("de-DE")}] ${a} — ${d}\n`+document.getElementById("zeuge").textContent;}
+function render(){
+ document.getElementById("figuren").innerHTML=FIGS.map(o=>`<div class="fig ${aktiv===o.id?'aktiv':''}"><div class="big">${o.emoji}</div><h2>${o.name}</h2><p><b style="color:#fff">${o.fn}</b><br>${o.nc}<br>Schach: ${o.schach}</p><button onclick="tu('${o.id}')">▶ ${o.name} tun</button></div>`).join("");
+ document.getElementById("takt").textContent=takt;
+ document.getElementById("ebene").textContent=ebene;
+ document.getElementById("core").textContent=core.toFixed(2);
+ document.getElementById("bar").style.width=(core*100/40)+"%";
+}
+function tu(id){
+ aktiv=id;
+ const o=FIGS.find(x=>x.id===id);
+ if(id==="DAME"){ core=f(core+2); log("DAME","SEHEN + BEWEGEN — 729 gesehen, 1 genommen. Core → "+core); }
+ if(id==="TURM"){ log("TURM","HALTEN + TRAGEN — Steht. Linie hält. Totpunkt gehalten."); }
+ if(id==="KOENIG"){ core=f(core+1); log("KÖNIG","LEBEN + MITTE — 1 Schritt. Ohne ihn ist alles aus. Core → "+core); }
+ if(id==="KAISER"){ log("KAISER","KRÖNEN — OFFEN. +3 nicht erklärt. Nicht behauptet. Gehalten."); }
+ render();
+}
+function start(){
+ if(timer) return;
+ timer=setInterval(()=>{
+   takt++; const reihe=["DAME","TURM","KOENIG","KAISER"];
+   aktiv=reihe[takt%4]; tu(aktiv);
+   if(takt%9===0){ ebene++; log("SELBSTLÄUFER","9 Takte → Ebene "+ebene+". Läuft allein. Keiner muss drücken."); }
+ },1200);
+ log("SELBSTLÄUFER","START — läuft allein. 1 Takt = 1 Funktion.");
+}
+function stop(){ clearInterval(timer); timer=null; log("STOP","Steht mit Befehl. Nicht tot. Wartet auf START."); }
+function wunder(){ core=40; log("WUNDER","HOME 40. Ebene "+ebene+" bleibt. Core → 40."); render(); }
+render(); log("START","Name ist Funktion. DAME sieht. TURM hält. KÖNIG lebt. KAISER krönt — OFFEN.");
+</script></body></html>
